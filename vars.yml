@@ -1,0 +1,12 @@
+---
+PACKAGES:
+        - python
+        - vim
+        - htop
+        - tmux
+        - docker-ce
+        - apt-transport-https 
+        - kubelet
+        - kubeadm
+        - kubectl
+        - kubernetes-cni

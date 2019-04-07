@@ -1,0 +1,49 @@
+---
+  - hosts: all
+    become: yes
+    become_method: sudo 
+    vars_files:
+        - ~/secret
+        - vars.yml
+
+    #python2 not installed by default on remote hosts
+    gather_facts: no
+    pre_tasks:
+            - name: 'install python2'
+              raw: sudo apt-get -y install python
+
+
+    tasks:
+
+      #Need to gather facts after python2 installed. 
+    - name: Fact Gathering
+      setup:
+
+      #kubectl only works when swap is disabled
+    - name: Disable swap
+      command: swapoff -a
+
+    - name: Install Docker repo key
+      apt_key:
+          url: https://download.docker.com/linux/ubuntu/gpg
+          state: present
+ 
+    - name: Add Docker repo
+      apt_repository:
+              repo: deb https://download.docker.com/linux/ubuntu cosmic stable
+              state: present
+
+    - name: Install Kubernetes repo key
+      apt_key:
+          url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
+          state: present
+ 
+    - name: Add kubernetes repo
+      apt_repository:
+          repo: deb https://apt.kubernetes.io/ kubernetes-xenial main
+          state: present
+    
+
+    - name: Install Pacakges
+      apt: name={{ item }} state=present update_cache=true force=yes
+      with_items: "{{ PACKAGES }}"

@@ -1,0 +1,9 @@
+---
+  - hosts: kube-workers
+    become: yes
+    become_method: sudo 
+    vars_files:
+        - ~/secret
+    tasks:
+            - name: reset kubeadm
+              command: kubeadm reset --force

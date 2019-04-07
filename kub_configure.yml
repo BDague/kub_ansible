@@ -1,0 +1,25 @@
+---
+  - hosts: all
+    become: yes
+    become_method: sudo 
+    vars_files:
+        - ~/secret
+        - vars.yml
+
+    tasks:
+    - name: Disable swap
+      command: swapoff -a
+
+    - name: Change container manager
+      copy:
+          src: "~/daemon.json"
+          dest: "/etc/docker/daemon.json"
+
+    - name: Reload deamon
+      command: systemctl daemon-reload
+
+    handlers:
+        - name: restart Docker
+          service:
+              name: docker
+              state: restarted

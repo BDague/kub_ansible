@@ -1,0 +1,26 @@
+---
+ - hosts: kube-master
+   become: yes
+   become_method: sudo
+   vars_files:
+           - secret
+
+   tasks:
+           - name: Get Kubernetes cluster token
+             command: "kubeadm token create --print-join-command"
+             register: join_command
+
+
+
+ - hosts: kube-workers
+   become: yes
+   become_method: sudo 
+   vars:
+           join_command: "{{ hostvars[groups['kube-master'][0]]['join_command']['stdout'] }}"
+   vars_files:
+           - secret
+
+   tasks:
+           - name: Join cluster
+             command: "{{ join_command }}"
+
